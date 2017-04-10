@@ -6,7 +6,7 @@ ValueReplacement["No"] = "FALSE";
 ValueReplacement["Yes"] = "TRUE";
 ValueReplacement["M"] = "MALE";
 ValueReplacement["F"] = "FEMALE";
-convertExcel("./PCAA/PCAAMembers.xlsx", null, null, function(err, data) {
+convertExcel("./PCAA/PCAACommittee.xlsx", null, null, function(err, data) {
     if (err) {
         console.log(err);
     }
@@ -37,24 +37,8 @@ function SendInfo() {
                     } else {
                         isAllNull = false;
                     }
-                    fullData[i][key] = fullData[i][key].toString().replace(/\'/g,"\\'");
-
-                    if (key == "PostAddrSame?") {
-                        fullData[i][key] = ValueReplacement[fullData[i][key]];
-                        continue;
-                    }
-                    if (key == "Gender") {
-                        fullData[i][key] = ValueReplacement[fullData[i][key]];
-                    } else if (key == "PostCode" || key == "StrPostCode") {
-                        fullData[i][key] = ("0000" + fullData[i][key]).slice(-4);
-                    } else if (key == "DoB") {
-                        var oldDate = new Date(1900, 1, 1);
-                        oldDate.setDate(oldDate.getDate() + parseInt(fullData[i][key]) - 2);
-                        fullData[i][key] = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
-                        console.log(fullData[i][key]);
-                        //  fullData[i][key] = String(fullData[i][key]).replace(/\//g, "-")
-                    }
-                    fullData[i][key] = "'" + fullData[i][key] + "'";
+                  //  fullData[i][key] = fullData[i][key].toString().replace(/\'/g, "\\'");
+                    //fullData[i][key] = "'" + fullData[i][key] + "'";
                 }
             }
             if (isAllNull) {
@@ -62,23 +46,29 @@ function SendInfo() {
                 i--;
                 continue;
             }
-            //        console.log(fullData[i]);
-            var queryString = "INSERT INTO members VALUES (NULL";
 
-            for (var key in fullData[i]) {
-                if (fullData[i].hasOwnProperty(key)) {
-                    queryString += ", " + fullData[i][key];
-                }
-            }
-            queryString += ");";
-            console.log(queryString);
-            connection.query(queryString, function(err, res) {
+        }
+        for (let i = 0; i < fullData.length; i++) {
+            var splitNames = fullData[i]["Member Name"].split(" ").filter(String);
+            console.log(splitNames);
+            var findingIDQuery = "SELECT ID FROM members WHERE FName = '" + splitNames[0] + "' AND LName = '" + splitNames[1] + "';";
+            console.log(findingIDQuery);
+            connection.query(findingIDQuery, function(err, res) {
                 if (err) {
                     console.log(err);
                 }
+                var insertQuery = "INSERT INTO committee VALUES (" + res[0].ID + ",'" + fullData[i]["Position"] + "');";
+                console.log(insertQuery);
+                connection.query(insertQuery, function(err, res) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
             });
         }
-        connection.end();
+        setTimeout(function() {
+            connection.end();
+        }, 1000);
     } else {
         console.log("notconnected");
     }
