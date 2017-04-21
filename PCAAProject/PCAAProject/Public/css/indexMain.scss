@@ -1,0 +1,118 @@
+﻿@font-face {
+    font-family: palanquin;
+    font-weight: normal;
+    src: url("Fonts/palanquin-regular.ttf");
+}
+
+body {
+    /*font-family: palanquin;*/
+}
+
+.borderfy {
+    border: black thin solid;
+}
+.table td.vert-align {
+    vertical-align: middle;
+}
+.removeColBtns {
+    margin-left: 5px;
+    color:red;
+}
+.titleRightSide {
+    margin-top: 10px;
+}
+.innerTitle {
+    margin-top:15px;
+}
+div.mainContentBox {
+    overflow: auto;
+    position:relative; // Makes all the absolute elements scroll.
+    max-height: 80vh;
+}
+.buttonSelector {
+    position:absolute;
+}
+.massEditBtns {
+    margin-top: 10px;
+}
+
+th, td {
+    min-width: 158px;
+    &.editBtnGroup {
+        min-width: 183px;
+    }
+}
+
+.table td.report-text {
+    font-size: 20px;
+}
+li.active > a {
+    color: white;
+}
+.anim-checkbox label:after, .radio label:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.anim-checkbox .cr, .radio .cr {
+    position: relative;
+    display: block;
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+    width: 1.3em;
+    height: 1.3em;
+    margin-left: auto;
+    margin-right: auto
+}
+
+div.anim-checkbox>label {
+    display: block;
+    margin-bottom: 0;
+    /*margin-left: auto;
+    margin-right: auto;*/
+}
+
+.radio .cr {
+    border-radius: 50%;
+}
+
+.anim-checkbox .cr .cr-icon, .radio .cr .cr-icon {
+    position: absolute;
+    font-size: .8em;
+    line-height: 0;
+    top: 50%;
+    left: 20%;
+}
+
+.radio .cr .cr-icon {
+    margin-left: 0.04em;
+}
+
+tr>td>div.show-on-hover {
+    visibility: hidden;
+    /*min-height: 30px;*/
+}
+
+tr:hover>td>div.show-on-hover {
+    visibility: visible;
+}
+
+.anim-checkbox label input[type="checkbox"], .radio label input[type="radio"] {
+    display: none;
+}
+
+.anim-checkbox label input[type="checkbox"]+.cr>.cr-icon, .radio label input[type="radio"]+.cr>.cr-icon {
+    transform: scale(0.25) rotateZ(0deg);
+    opacity: 0;
+    transition: all .1s ease-in;
+}
+
+.anim-checkbox label input[type="checkbox"]:checked+.cr>.cr-icon, .radio label input[type="radio"]:checked+.cr>.cr-icon {
+    transform: scale(1) rotateZ(0deg);
+    opacity: 1;
+}
+
+.anim-checkbox label input[type="checkbox"]:disabled+.cr, .radio label input[type="radio"]:disabled+.cr {
+    opacity: .5;
+}

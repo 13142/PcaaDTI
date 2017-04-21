@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>PCAA Manager</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="css/indexMain.css">
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1><b>PCAA Manager</b></h1>
+            <p>Management for thing</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <b>
+                    <ul class="list-group">
+                        <li class="list-group-item "><h3><b>Choices</b></h3></li>
+                        <li class="list-group-item active"><a data-toggle="tab" href="#registrationinfo">Registrations</a></li>
+                        <li class="list-group-item"><a data-toggle="tab" href="#members">Members</a></li>
+                        <li class="list-group-item"><a data-toggle="tab" href="#/">Venues</a></li>
+                        <!--         <li class="list-group-item"><a data-toggle="tab" href="#/">Update Venue Locations from Excel Spreadsheet</a></li>-->
+                        <li class="list-group-item"><a data-toggle="tab" href="#ReportGenPanel">Generate reports</a></li>
+                    </ul>
+                </b>
+            </div>
+            <div class="col-md-8">
+                <div class="tab-content">
+                    <div id="registrationinfo" class="panel tab-pane fade in active panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Jubilee Registrations</h3>
+                        </div>
+                        <div class="panel-body">
+                            <h4>Currently registered members for the jubilee:</h4>
+                            <table class="table table-striped table-hover table-responsive ">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="anim-checkbox">
+                                                <label>
+                                                    <input type="checkbox" value="">
+                                                    <span class="cr">
+                                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th>First name</th>
+                                        <th>Last name</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each RegistrationDetails}}
+                                    <tr>
+                                        <td class="col-md-1 vert-align">
+                                            <div class="anim-checkbox">
+                                                <label>
+                                                    <input type="checkbox" value="">
+                                                    <span class="cr">
+                                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="vert-align">{{FName}}</td>
+                                        <td class="vert-align">{{LName}}</td>
+                                        <td class="vert-align">{{Activities}}</td>
+                                        <td class="vert-align">
+                                            <div class="btn-group btn-group-sm pull-right show-on-hover">
+                                                <button type="button" class="btn btn-default">Info</button>
+                                                <button type="button" class="btn btn-default">Edit</button>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                            <div class="pull-right">
+                                <label for="massEdit" style="vertical-align: middle; padding: 6px">Mass Edit:</label>
+                                <div class="btn-group btn-group-md pull-right" id="massEdit">
+                                    <button type="button" class="btn btn-default">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="members" class="panel tab-pane fade in panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Jubilee Members</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <span class="pull-right titleRightSide">
+                                Nothing is actually done until you press <span class="glyphicon glyphicon-arrow-right"></span>  
+                                <span class="btn-group btn-group-md">
+                                    <button class="btn btn-success saveAllBtn" data-toggle="modal" data-target="#submitConfirm">Save &amp; Submit</button>
+                                    <button class="btn btn-warning revertAllBtn" data-toggle="modal" data-target="#revertConfirm">Revert</button>
+                                </span>
+                            </span>
+                            <h4 class="innerTitle">Currently registered members of PCAA:</h4>
+
+                            <div class="mainContentBox">
+                                <table class="table table-striped table-hover table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="anim-checkbox">
+                                                    <label>
+                                                        <input type="checkbox" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </th>
+                                            {{#each MemberDesc}}
+                                            <th>{{this}}</th>
+                                            {{/each}}
+                                            <th>
+                                                <div class="dropdown buttonSelector pull-right">
+                                                    <button class="btn btn-primary dropdown-toggle btn-sm" type="button" data-toggle="dropdown">
+                                                        Editor List
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        {{#each MemberDesc}}
+                                                        <li><a class="buttonSelSelction" href="#/">{{this}}</a></li>
+                                                        {{/each}}
+                                                    </ul>
+                                                </div>
+                                                <button type="button" class="btn btn-default pull-right btn-sm colEditBtn">Toggle Edit</button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        {{#each MemberDetails}}
+                                        <tr>
+                                            <td class="col-md-1 vert-align">
+                                                <div class="anim-checkbox" draggable="false">
+                                                    <label>
+                                                        <input type="checkbox" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            {{#each this}}
+
+                                            <td class="vert-align dataEntry">{{this}}</td>
+
+                                            {{/each}}
+                                            <td class="vert-align editBtnGroup">
+                                                <div class="btn-group btn-group-sm pull-right show-on-hover">
+                                                    <button type="button" class="btn btn-success editSaveBtn">Save</button>
+                                                    <button type="button" class="btn btn-warning editCancleBtn">Cancle</button>
+                                                    <button type="button" class="btn btn-default editEntryBtn">Edit</button>
+                                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pull-right massEditBtns">
+                                <label for="massEdit" style="vertical-align: middle; padding: 6px">Mass Edit:</label>
+                                <div class="btn-group btn-group-md pull-right" id="massEdit">
+                                    <button type="button" class="btn btn-default">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ReportGenPanel" class="panel tab-pane fade panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Generate Reports</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <table class="table table-responsive">
+                                <tbody>
+                                    <tr>
+                                        <td class="vert-align report-text">
+                                            Jubilee Activities attendance numbers report
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary pull-right" id="attendenceRepBtn" style="white-space: normal">
+                                                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                                                Download
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="vert-align report-text">
+                                            Jubilee Activity Registers report
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary pull-right" style="white-space: normal">
+                                                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                                                Download
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="vert-align report-text">
+                                            Jubilee attendees badges
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary pull-right" style="white-space: normal">
+                                                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                                                Download
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #ddd;">
+                                        <td class="vert-align report-text">
+                                            List of people attending the Jubilee Celebrations – for Jubilee website
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary pull-right" style="white-space: normal">
+                                                <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                                                View page
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <div class="modal fade" id="removalConfirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Remove confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove this entry? --- <span class="info"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id=".close">Close</button>
+                    <button type="button" class="btn btn-danger" id="removeConfirmBtn" data-dismiss="modal">Yes, remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="revertConfirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Submit confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to revert this updated table to the original?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning" id="revertConfirmBtn" data-dismiss="modal">Revert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="submitConfirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Submit confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to submit this updated table?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="submitConfirmBtn" data-dismiss="modal">Yes, submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>var databaseDesc = {{{GeneralData}}}</script>
+    <script src="js/index.js"></script>
+</body>
+</html>

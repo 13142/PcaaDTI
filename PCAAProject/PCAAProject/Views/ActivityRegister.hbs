@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+            padding: 8px;
+            line-height: 1.42857143;
+            vertical-align: top;
+            border-top: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+
+        .table td.vert-align {
+            vertical-align: middle;
+        }
+
+        th, td {
+            min-width: 158px;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(2n+1) {
+            background-color: #f9f9f9;
+        }
+
+        .anim-checkbox .cr .cr-icon, .radio .cr .cr-icon {
+            position: absolute;
+            font-size: .8em;
+            line-height: 0;
+            top: 50%;
+            left: 20%;
+        }
+
+        .anim-checkbox label input[type="checkbox"], .radio label input[type="radio"] {
+            display: none;
+        }
+
+                .anim-checkbox label:after, .radio label:after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        .anim-checkbox .cr, .radio .cr {
+            position: relative;
+            display: block;
+            border: 1px solid #a9a9a9;
+            border-radius: .25em;
+            width: 1.3em;
+            height: 1.3em;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        div.anim-checkbox > label {
+            display: block;
+            margin-bottom: 0;
+            /*margin-left: auto;
+        margin-right: auto;*/
+        }
+    </style>
+</head>
+<body>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {{#each QueryHeaderRow}}
+                <th>{{this}}</th>
+                {{/each}}
+                <th></th>
+            </tr>
+        </thead>
+        {{#each QueryData}}
+        <tr>
+            {{#each this}}
+            <td>{{this}}</td>
+            {{/each}}
+            <td class="vert-align">
+                <div class="anim-checkbox">
+                    <label>
+                        <input type="checkbox" value="">
+                        <span class="cr">
+                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                        </span>
+                    </label>
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+    </table>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "pcaaproject",
+  "version": "0.0.0",
+  "description": "PCAAProject",
+  "main": "app.js",
+  "author": {
+    "name": "Hand of Cthulhu"
+  },
+  "devDependencies": {
+    "body-parser": "^1.17.1",
+    "consolidate": "^0.14.5",
+    "express": "^4.15.2",
+    "handlebars": "^4.0.6",
+    "html-pdf": "^2.1.0",
+    "jquery": "^3.2.1",
+    "mysql": "^2.13.0",
+    "q": "^1.5.0"
+  }
+}

@@ -1,0 +1,2 @@
+F:\Documents\Visual Studio 2015\Projects\PCAAProject\PCAAProject\obj\Debug\PCAAProject.njsprojResolveAssemblyReference.cache
+F:\Documents\Visual Studio 2015\Projects\PCAAProject\PCAAProject\bin\Microsoft.NodejsTools.WebRole.dll
