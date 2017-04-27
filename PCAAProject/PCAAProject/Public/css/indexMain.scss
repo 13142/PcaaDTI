@@ -8,36 +8,66 @@ body {
     /*font-family: palanquin;*/
 }
 
+div.addEntryEntry {
+    margin-top: 10px;
+    display: flex;
+}
+
+label.addEntryLbl {
+    flex: 0 0 auto;
+    margin-right: 20px;
+    line-height: 2.2;
+    font-weight: 700;
+}
+
+span.description {
+    flex: 0 0 180px;
+    line-height: 220%;
+    margin-left: 20px;
+}
+
+input.addEntryInput {
+    flex: 1 1 auto;
+}
+
 .borderfy {
     border: black thin solid;
 }
+
 .table td.vert-align {
     vertical-align: middle;
 }
+
 .removeColBtns {
     margin-left: 5px;
-    color:red;
+    color: red;
 }
+
 .titleRightSide {
     margin-top: 10px;
 }
+
 .innerTitle {
-    margin-top:15px;
+    margin-top: 15px;
 }
+
 div.mainContentBox {
     overflow: auto;
-    position:relative; // Makes all the absolute elements scroll.
+    position: relative; // Makes all the absolute elements scroll.
     max-height: 80vh;
 }
+
 .buttonSelector {
-    position:absolute;
+    position: absolute;
 }
+
 .massEditBtns {
     margin-top: 10px;
 }
 
 th, td {
     min-width: 158px;
+
     &.editBtnGroup {
         min-width: 183px;
     }
@@ -46,9 +76,32 @@ th, td {
 .table td.report-text {
     font-size: 20px;
 }
+
 li.active > a {
     color: white;
 }
+
+
+.radio .cr {
+    border-radius: 50%;
+}
+
+
+
+.radio .cr .cr-icon {
+    margin-left: 0.04em;
+}
+
+tr > td > div.show-on-hover {
+    visibility: hidden;
+    /*min-height: 30px;*/
+}
+
+tr:hover > td > div.show-on-hover {
+    visibility: visible;
+}
+
+//Checkbox
 .anim-checkbox label:after, .radio label:after {
     content: '';
     display: table;
@@ -63,19 +116,16 @@ li.active > a {
     width: 1.3em;
     height: 1.3em;
     margin-left: auto;
-    margin-right: auto
+    margin-right: auto;
 }
 
-div.anim-checkbox>label {
+div.anim-checkbox > label {
     display: block;
     margin-bottom: 0;
     /*margin-left: auto;
     margin-right: auto;*/
 }
 
-.radio .cr {
-    border-radius: 50%;
-}
 
 .anim-checkbox .cr .cr-icon, .radio .cr .cr-icon {
     position: absolute;
@@ -85,34 +135,34 @@ div.anim-checkbox>label {
     left: 20%;
 }
 
-.radio .cr .cr-icon {
-    margin-left: 0.04em;
-}
-
-tr>td>div.show-on-hover {
-    visibility: hidden;
-    /*min-height: 30px;*/
-}
-
-tr:hover>td>div.show-on-hover {
-    visibility: visible;
-}
-
 .anim-checkbox label input[type="checkbox"], .radio label input[type="radio"] {
     display: none;
 }
 
-.anim-checkbox label input[type="checkbox"]+.cr>.cr-icon, .radio label input[type="radio"]+.cr>.cr-icon {
+.anim-checkbox label input[type="checkbox"] + .cr > .cr-icon, .radio label input[type="radio"] + .cr > .cr-icon {
     transform: scale(0.25) rotateZ(0deg);
     opacity: 0;
     transition: all .1s ease-in;
 }
 
-.anim-checkbox label input[type="checkbox"]:checked+.cr>.cr-icon, .radio label input[type="radio"]:checked+.cr>.cr-icon {
+.anim-checkbox label input[type="checkbox"]:checked + .cr > .cr-icon, .radio label input[type="radio"]:checked + .cr > .cr-icon {
     transform: scale(1) rotateZ(0deg);
     opacity: 1;
 }
 
-.anim-checkbox label input[type="checkbox"]:disabled+.cr, .radio label input[type="radio"]:disabled+.cr {
+.anim-checkbox label input[type="checkbox"]:disabled + .cr, .radio label input[type="radio"]:disabled + .cr {
     opacity: .5;
+}
+
+.upload-drop-zone {
+    color: #ccc;
+    border-style: dashed;
+    border-color: #ccc;
+    line-height: 200px;
+    text-align: center;
+
+    &.drop {
+        color: #222;
+        border-color: #222;
+    }
 }

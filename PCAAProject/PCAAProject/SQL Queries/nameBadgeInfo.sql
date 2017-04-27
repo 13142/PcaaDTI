@@ -1,0 +1,1 @@
+SELECT members.id, members.FName, members.LName, members.Involvement, members.YearStartPCollege, members.YearEndPCollege FROM registrationinfo JOIN members GROUP BY members.id

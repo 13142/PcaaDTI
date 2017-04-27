@@ -44,6 +44,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Views\images\BadgeFramePrintQuality.png" />
+    <Content Include="Views\NameBadge.hbs" />
     <Content Include="Views\ActivityRegister.hbs" />
     <Content Include="Views\VenueCapacityOutput.hbs" />
     <None Include="compilerconfig.json" />
@@ -82,6 +84,7 @@
     <Folder Include="Public\css\" />
     <Folder Include="Public\fonts\" />
     <Folder Include="Public\js\" />
+    <Folder Include="Views\images\" />
     <Folder Include="Scripts\typings\globals\" />
     <Folder Include="Scripts\typings\globals\handlebars\" />
     <Folder Include="Scripts\typings\modules\" />

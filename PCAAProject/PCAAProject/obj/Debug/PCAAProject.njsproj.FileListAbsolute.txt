@@ -1,2 +1,4 @@
 F:\Documents\Visual Studio 2015\Projects\PCAAProject\PCAAProject\obj\Debug\PCAAProject.njsprojResolveAssemblyReference.cache
 F:\Documents\Visual Studio 2015\Projects\PCAAProject\PCAAProject\bin\Microsoft.NodejsTools.WebRole.dll
+F:\Documents\Visual Studio 2015\Projects\NodeFTPServer\NodeFTPServer\FTPTester\PCAA\PCAAProject\PCAAProject\obj\Debug\PCAAProject.njsprojResolveAssemblyReference.cache
+F:\Documents\Visual Studio 2015\Projects\NodeFTPServer\NodeFTPServer\FTPTester\PCAA\PCAAProject\PCAAProject\bin\Microsoft.NodejsTools.WebRole.dll

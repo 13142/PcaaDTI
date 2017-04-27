@@ -11,13 +11,15 @@
             vertical-align: top;
             border-top: 1px solid #ddd;
             box-sizing: border-box;
+            margin-bottom: 50px;
         }
 
         .table td.vert-align {
             vertical-align: middle;
         }
-
+        
         th, td {
+            text-align:left;
             min-width: 158px;
         }
 
@@ -42,7 +44,7 @@
             display: none;
         }
 
-                .anim-checkbox label:after, .radio label:after {
+        .anim-checkbox label:after, .radio label:after {
             content: '';
             display: table;
             clear: both;
@@ -65,19 +67,24 @@
             /*margin-left: auto;
         margin-right: auto;*/
         }
+
+        .page-break  { display:block; page-break-before:always; }
     </style>
 </head>
 <body>
+
+    {{#each QueryData}}
+    <h2>{{title}}</h2>
     <table class="table table-striped">
         <thead>
             <tr>
-                {{#each QueryHeaderRow}}
+                {{#each ../QueryHeaderRow}}
                 <th>{{this}}</th>
                 {{/each}}
                 <th></th>
             </tr>
         </thead>
-        {{#each QueryData}}
+        {{#each data}}
         <tr>
             {{#each this}}
             <td>{{this}}</td>
@@ -95,5 +102,7 @@
         </tr>
         {{/each}}
     </table>
+    <div class="page-break"></div>
+    {{/each}}
 </body>
 </html>
