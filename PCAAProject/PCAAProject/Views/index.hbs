@@ -34,72 +34,183 @@
             </div>
             <div class="col-md-8">
                 <div class="tab-content">
-                    <div id="registrationinfo" class="panel tab-pane fade in active panel-default">
+                    <div id="registrationinfo" class="panel tab-pane fade in panel-default active">
                         <div class="panel-heading">
                             <h3 class="panel-title">Jubilee Registrations</h3>
                         </div>
                         <div class="panel-body">
-                            <h4>Currently registered members for the jubilee:</h4>
-                            <table class="table table-striped table-hover table-responsive ">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <div class="anim-checkbox">
-                                                <label>
-                                                    <input type="checkbox" value="">
-                                                    <span class="cr">
-                                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
-                                                    </span>
-                                                </label>
+
+                            <span class="pull-right titleRightSide">
+                                Nothing is actually done until you press <span class="glyphicon glyphicon-arrow-right"></span>
+                                <span class="btn-group btn-group-md">
+                                    <button class="btn btn-success saveAllBtn" data-toggle="modal" data-target="#submitConfirm">Save &amp; Submit</button>
+                                    <button class="btn btn-warning revertAllBtn" data-toggle="modal" data-target="#revertConfirm">Revert</button>
+                                </span>
+                            </span>
+                            <h4 class="innerTitle">Currently registered members for each jubilee activity:</h4>
+                            <div class="mainContentBox">
+                                <table class="table table-striped table-hover table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="anim-checkbox">
+                                                    <label>
+                                                        <input type="checkbox" class="selectAllCb" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </th>
+                                            {{#each RegisDesc}}
+                                            <th>{{this}}</th>
+                                            {{/each}}
+                                            <th>
+                                                <div class="dropdown buttonSelector pull-right">
+                                                    <button class="btn btn-primary dropdown-toggle btn-sm" type="button" data-toggle="dropdown">
+                                                        Editor List
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        {{#each RegisDesc}}
+                                                        <li><a class="buttonSelSelction" href="#/">{{this}}</a></li>
+                                                        {{/each}}
+                                                    </ul>
+                                                </div>
+                                                <button type="button" class="btn btn-default pull-right btn-sm colEditBtn">Toggle Edit</button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        {{#each RegisDetails}}
+                                        <tr>
+                                            <td class="col-md-1 vert-align">
+                                                <div class="anim-checkbox" draggable="false">
+                                                    <label>
+                                                        <input type="checkbox" class="massEditCbox" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            {{#each this}}
+
+                                            <td class="vert-align dataEntry">
+                                                <div class="displayEntry">{{this}}</div>
+                                                {{#if @first}}
+                                                {{else}}
+                                                <div class="editEntry" style="display:none">
+                                                    <!--{{lookup (lookup ../../RegisType (math @index "-" 1)) "type"}}-->
+                                                    {{#if (lookup (lookup ../../RegisType (math @index "-" 1)) "enumArray")}}
+                                                    <select class="form-control addEntryInput" colID="{{@index}}">
+                                                        {{#each (lookup (lookup ../../RegisType (math @index "-" 1)) "enumArray")}}
+                                                        <option>{{this}}</option>
+                                                        {{/each}}
+                                                    </select>
+                                                    {{else if (lookup (lookup ../../RegisType (math @index "-" 1)) "year")}}
+                                                    <input type="number" class="form-control addEntryInput" value="2000" maxlength="4" colID="{{@index}}">
+                                                    {{else if (lookup (lookup ../../RegisType (math @index "-" 1)) "isBool")}}
+                                                    <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
+                                                        <label style="margin-top: 5px;">
+                                                            <input type="checkbox" class="addEntryInput" value="">
+                                                            <span class="cr">
+                                                                <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    {{else}}
+                                                    <input type="text" class="form-control addEntryInput" name="{{lookup (lookup ../../RegisType (math @index "-" 1)) "title"}}" id="{{lookup (lookup ../../RegisType (math @index "-" 1)) "title"}}" value="" placeholder="{{lookup (lookup ../../RegisType (math @index "-" 1)) "placeholder"}}" colID="{{@index}}" />
+                                                    {{/if}}
+
+                                                </div>
+                                                {{/if}}
+                                            </td>
+
+
+                                            {{/each}}
+                                            <td class="vert-align editBtnGroup">
+                                                <div class="btn-group btn-group-sm pull-right show-on-hover">
+                                                    <button type="button" class="btn btn-success editSaveBtn">Save</button>
+                                                    <button type="button" class="btn btn-warning editCancelBtn">Cancel</button>
+                                                    <button type="button" class="btn btn-default editEntryBtn">Edit</button>
+                                                    <button type="button" class="btn btn-danger cancelRegisBtn">Cancle</button>
+                                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <div class="pull-right" style="vertical-align: middle;"><button class="btn btn-primary" data-toggle="modal" data-target="#addRegis">Add</button></div>
+                                <div class="massEditBtns">
+                                    <label for="massEdit" style="vertical-align: middle;">Mass Edit:</label>
+                                    <div class="btn-group btn-group-md">
+                                        <button type="button" class="btn btn-default massEditEdit" data-toggle="modal" data-target="#addRegis">
+                                            Edit
+                                        </button>
+                                        <button type="button" class="btn btn-danger massEditRemove" data-toggle="modal" data-target="#removalConfirm">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade addEntryModal" id="addRegis" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title" id="">Add item</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        Add entry to registrations:
+                                        <div class="form-group">
+                                            <div class="addEntryEntry">
+                                                <span class="addEntryLbl" style="margin-right: 20px"><b>ID</b></span>
+                                                <span class=""> Auto generated</span>
                                             </div>
-                                        </th>
-                                        <th>First name</th>
-                                        <th>Last name</th>
-                                        <th>Email</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{#each RegistrationDetails}}
-                                    <tr>
-                                        <td class="col-md-1 vert-align">
-                                            <div class="anim-checkbox">
-                                                <label>
-                                                    <input type="checkbox" value="">
-                                                    <span class="cr">
-                                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
-                                                    </span>
-                                                </label>
+                                            {{#each RegisType}}
+                                            <div class="addEntryEntry">
+                                                <label class="addEntryLbl" for="{{title}}">{{title}}</label>
+                                                {{#if enumArray}}
+                                                <select class="form-control addEntryInput" colID="{{math @index "+" 1}}">
+                                                    {{#each enumArray}}
+                                                    <option>{{this}}</option>
+                                                    {{/each}}
+                                                </select>
+                                                {{else if year}}
+                                                <input type="number" class="form-control addEntryInput" value="2000" maxlength="{{maxSize}}" colID="{{math @index "+" 1}}">
+                                                <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                                                {{else if isBool}}
+                                                <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
+                                                    <label style="margin-top: 5px;">
+                                                        <input type="checkbox" class="addEntryInput" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                {{else}}
+                                                <input type="text" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" placeholder="{{placeholder}}" colID="{{math @index "+" 1}}" />
+                                                <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                                                {{/if}}
                                             </div>
-                                        </td>
-                                        <td class="vert-align">{{FName}}</td>
-                                        <td class="vert-align">{{LName}}</td>
-                                        <td class="vert-align">{{Activities}}</td>
-                                        <td class="vert-align">
-                                            <div class="btn-group btn-group-sm pull-right show-on-hover">
-                                                <button type="button" class="btn btn-default">Info</button>
-                                                <button type="button" class="btn btn-default">Edit</button>
-                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {{/each}}
-                                </tbody>
-                            </table>
-                            <div class="pull-right">
-                                <label for="massEdit" style="vertical-align: middle; padding: 6px">Mass Edit:</label>
-                                <div class="btn-group btn-group-md pull-right" id="massEdit">
-                                    <button type="button" class="btn btn-default">
-                                        Edit
-                                    </button>
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removalConfirm">
-                                        Cancel
-                                    </button>
+                                            {{/each}}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                                        <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal">Add</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                   
                     <div id="members" class="panel tab-pane fade in panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Jubilee Members</h3>
@@ -122,7 +233,7 @@
                                             <th>
                                                 <div class="anim-checkbox">
                                                     <label>
-                                                        <input type="checkbox" value="">
+                                                        <input type="checkbox" class="selectAllCb" value="">
                                                         <span class="cr">
                                                             <i class="cr-icon glyphicon glyphicon-ok"></i>
                                                         </span>
@@ -177,7 +288,7 @@
                                                         {{/each}}
                                                     </select>
                                                     {{else if (lookup (lookup ../../MemberType (math @index "-" 1)) "year")}}
-                                                    <input type="number" class="form-control addEntryInput" value="2000" maxlength="4" max="2999" min="1800" colID="{{@index}}">
+                                                    <input type="number" class="form-control addEntryInput" value="2000" maxlength="4" colID="{{@index}}">
                                                     <!--  <span class="description">Max Length: <b class="maxL">{{lookup (lookup ../../MemberType (math @index "-" 1)) "maxSize"}}</b> Type: <b class="varType">{{lookup (lookup ../../MemberType (math @index "-" 1)) "type"}}</b></span>-->
                                                     {{else if (lookup (lookup ../../MemberType (math @index "-" 1)) "isBool")}}
                                                     <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
@@ -227,60 +338,61 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="modal fade" id="addMembers" tabindex="-1" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                    <h4 class="modal-title" id="">Add item</h4>
-                                </div>
-                                <div class="modal-body">
-                                    Add entry to members:
-                                    <div class="form-group">
-                                        <div class="addEntryEntry">
-                                            <span class="addEntryLbl" style="margin-right: 20px"><b>ID</b></span>
-                                            <span class=""> Auto generated</span>
-                                        </div>
-                                        {{#each MemberType}}
-                                        <div class="addEntryEntry">
-                                            <label class="addEntryLbl" for="{{title}}">{{title}}</label>
-                                            {{#if enumArray}}
-                                            <select class="form-control addEntryInput" colID="{{math @index "+" 1}}">
-                                                {{#each enumArray}}
-                                                <option>{{this}}</option>
-                                                {{/each}}
-                                            </select>
-                                            {{else if year}}
-                                            <input type="number" class="form-control addEntryInput" value="2000" maxlength="4" max="2999" min="-1" colID="{{math @index "+" 1}}">
-                                            <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
-                                            {{else if isBool}}
-                                            <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
-                                                <label style="margin-top: 5px;">
-                                                    <input type="checkbox" class="addEntryInput" value="">
-                                                    <span class="cr">
-                                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            {{else}}
-                                            <input type="text" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" placeholder="{{placeholder}}" colID="{{math @index "+" 1}}" />
-                                            <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
-                                            {{/if}}
-                                        </div>
-                                        {{/each}}
+                        <div class="modal fade addEntryModal" id="addMembers" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title" id="">Add item</h4>
                                     </div>
+                                    <div class="modal-body">
+                                        Add entry to members:
+                                        <div class="form-group">
+                                            <div class="addEntryEntry">
+                                                <span class="addEntryLbl" style="margin-right: 20px"><b>ID</b></span>
+                                                <span class=""> Auto generated</span>
+                                            </div>
+                                            {{#each MemberType}}
+                                            <div class="addEntryEntry">
+                                                <label class="addEntryLbl" for="{{title}}">{{title}}</label>
+                                                {{#if enumArray}}
+                                                <select class="form-control addEntryInput" colID="{{math @index "+" 1}}">
+                                                    {{#each enumArray}}
+                                                    <option>{{this}}</option>
+                                                    {{/each}}
+                                                </select>
+                                                {{else if year}}
+                                                <input type="number" class="form-control addEntryInput" value="2000" maxlength="{{maxSize}}" colID="{{math @index "+" 1}}">
+                                                <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                                                {{else if isBool}}
+                                                <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
+                                                    <label style="margin-top: 5px;">
+                                                        <input type="checkbox" class="addEntryInput" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                {{else}}
+                                                <input type="text" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" placeholder="{{placeholder}}" colID="{{math @index "+" 1}}" />
+                                                <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                                                {{/if}}
+                                            </div>
+                                            {{/each}}
+                                        </div>
 
 
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
-                                    <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal">Add</button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                                        <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal">Add</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
                     <div id="venuelocations" class="panel tab-pane fade panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Venue locations</h3>
@@ -302,7 +414,7 @@
                                             <th>
                                                 <div class="anim-checkbox">
                                                     <label>
-                                                        <input type="checkbox" value="">
+                                                        <input type="checkbox" class="selectAllCb" value="">
                                                         <span class="cr">
                                                             <i class="cr-icon glyphicon glyphicon-ok"></i>
                                                         </span>
@@ -348,14 +460,14 @@
                                                 {{#if @first}}
                                                 {{else}}
                                                 <div class="editEntry" style="display:none">
-                                                      {{#if (lookup (lookup ../../VenueType (math @index "-" 1)) "enumArray")}}
+                                                    {{#if (lookup (lookup ../../VenueType (math @index "-" 1)) "enumArray")}}
                                                     <select class="form-control addEntryInput" colID="{{@index}}">
                                                         {{#each (lookup (lookup ../../VenueType (math @index "-" 1)) "enumArray")}}
                                                         <option>{{this}}</option>
                                                         {{/each}}
                                                     </select>
                                                     {{else if (lookup (lookup ../../VenueType (math @index "-" 1)) "year")}}
-                                                    <input type="number" class="form-control addEntryInput" value="2000" maxlength="4" max="2999" min="1800" colID="{{@index}}">
+                                                    <input type="number" class="form-control addEntryInput" value="2000" maxlength="8" colID="{{@index}}">
                                                     {{else if (lookup (lookup ../../VenueType (math @index "-" 1)) "isBool")}}
                                                     <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
                                                         <label style="margin-top: 5px;">
@@ -404,57 +516,58 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal fade" id="addVenue" tabindex="-1" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                    <h4 class="modal-title" id="">Add item</h4>
-                                </div>
-                                <div class="modal-body">
-                                    Add entry to venues:
-                                    <div class="form-group">
-                                        <div class="addEntryEntry">
-                                            <span class="addEntryLbl" style="margin-right: 20px"><b>ID</b></span>
-                                            <span class=""> Auto generated</span>
-                                        </div>
-                                        {{#each VenueType}}
-                                        <div class="addEntryEntry">
-                                            <label class="addEntryLbl" for="{{title}}">{{title}}</label>
-                                            {{#if enumArray}}
-                                            <select class="form-control addEntryInput" colID="{{math @index "+" 1}}">
-                                                {{#each enumArray}}
-                                                <option>{{this}}</option>
-                                                {{/each}}
-                                            </select>
-                                            {{else if year}}
-                                            <input type="number" class="form-control addEntryInput" value="2000" maxlength="4" max="2999" min="-1" colID="{{math @index "+" 1}}">
-                                            <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
-                                            {{else if isBool}}
-                                            <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
-                                                <label style="margin-top: 5px;">
-                                                    <input type="checkbox" class="addEntryInput" value="">
-                                                    <span class="cr">
-                                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            {{else}}
-                                            <input type="text" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" placeholder="{{placeholder}}" colID="{{math @index "+" 1}}" />
-                                            <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
-                                            {{/if}}
-                                        </div>
-                                        {{/each}}
+                        <div class="modal fade addEntryModal" id="addVenue" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title" id="">Add item</h4>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
-                                    <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal">Add</button>
+                                    <div class="modal-body">
+                                        Add entry to venues:
+                                        <div class="form-group">
+                                            <div class="addEntryEntry">
+                                                <span class="addEntryLbl" style="margin-right: 20px"><b>ID</b></span>
+                                                <span class=""> Auto generated</span>
+                                            </div>
+                                            {{#each VenueType}}
+                                            <div class="addEntryEntry">
+                                                <label class="addEntryLbl" for="{{title}}">{{title}}</label>
+                                                {{#if enumArray}}
+                                                <select class="form-control addEntryInput" colID="{{math @index "+" 1}}">
+                                                    {{#each enumArray}}
+                                                    <option>{{this}}</option>
+                                                    {{/each}}
+                                                </select>
+                                                {{else if year}}
+                                                <input type="number" class="form-control addEntryInput" value="2000" maxlength="{{maxSize}}" colID="{{math @index "+" 1}}">
+                                                <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                                                {{else if isBool}}
+                                                <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
+                                                    <label style="margin-top: 5px;">
+                                                        <input type="checkbox" class="addEntryInput" value="">
+                                                        <span class="cr">
+                                                            <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                {{else}}
+                                                <input type="text" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" placeholder="{{placeholder}}" colID="{{math @index "+" 1}}" />
+                                                <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                                                {{/if}}
+                                            </div>
+                                            {{/each}}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                                        <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal">Add</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="modal fade" id="uploadxlsx" tabindex="-1" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -464,7 +577,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <!-- Standard Form -->
-                                    <h4>Select files from your computer</h4>
+                                    <h4>Select the file from your computer</h4>
                                     <form action="" method="post" enctype="multipart/form-data" id="js-upload-form">
                                         <div class="form-inline">
                                             <div class="form-group">
@@ -474,20 +587,11 @@
                                         </div>
                                     </form>
                                     <!-- Drop Zone -->
-                                    <h4>Or drag and drop files below</h4>
+                                    <h4>Or drag and drop file below</h4>
                                     <div class="upload-drop-zone" id="drop-zone">
                                         Or drag and drop the excel file here
                                     </div>
-                                    <!-- Progress Bar -->
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
-                                    <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal">Add</button>
+                                    <h5 style="color:red">WARNING: This will overwrite all entries that have the same <i>VenueName</i> as your excel file with the new data. There will be <b>no confirmation dialog</b>.</h5>
                                 </div>
                             </div>
                         </div>
@@ -554,8 +658,6 @@
         </div>
     </div>
 
-
-
     <div class="modal fade" id="removalConfirm" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -611,7 +713,10 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script></script>
-    <script>var databaseDesc = {{{GeneralData}}}</script>
+    <script>
+        var databaseDesc = {{{GeneralData}}};
+        var typeIndexLookup = {{{typeIndexLookup}}};
+    </script>
     <script src="js/index.js"></script>
 </body>
 </html>

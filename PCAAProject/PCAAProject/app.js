@@ -4,6 +4,8 @@
 /// <reference path="Scripts/typings/modules/mysql/index.d.ts" />
 /// <reference path="Scripts/typings/modules/q/index.d.ts" />
 /// <reference path="Scripts/typings/modules/body-parser/index.d.ts" />
+/// <reference path="Scripts/typings/modules/multer/index.d.ts" />
+/// <reference path="Scripts/typings/modules/xlsx/index.d.ts" />
 /// <reference path="Scripts/typings/globals/html-pdf/index.d.ts" />
 "use strict";
 const handlebars = require("handlebars");
@@ -15,6 +17,10 @@ const mysql = require("mysql");
 const Q = require("q");
 const moment = require("moment");
 const bodyParser = require("body-parser");
+const xlsx = require("xlsx");
+//import * as Mysqlindex from "~mysql/index";
+const multer = require("multer");
+var upload = multer({ storage: multer.memoryStorage() });
 var app = express();
 app.use(express.static("Public"));
 app.use(bodyParser.json());
@@ -43,7 +49,12 @@ app.get("/", (req, res) => {
     }
     function registrationsQuery() {
         const defered = Q.defer();
-        connection.query("SELECT group_concat(tblC.ActivityName SEPARATOR ',') AS 'Activities',tblB.FName, tblB.LName FROM registrationinfo tblA \n\tJOIN members tblB \n\t\tON tblA.MemberID = tblB.ID \n\tJOIN jubileeactivities tblC \n\t\tON tblC.ID = tblA.ActivityID \n\tGROUP BY tblA.MemberID", defered.makeNodeResolver());
+        connection.query("SELECT * FROM registrationinfo", defered.makeNodeResolver());
+        return defered.promise;
+    }
+    function registrationsTypeQuery() {
+        const defered = Q.defer();
+        connection.query("DESC registrationinfo", defered.makeNodeResolver());
         return defered.promise;
     }
     function memberDescQuery() {
@@ -61,6 +72,11 @@ app.get("/", (req, res) => {
         connection.query("SELECT * FROM venuelocations", defered.makeNodeResolver());
         return defered.promise;
     }
+    function canceledQuery() {
+        const defered = Q.defer();
+        connection.query("SELECT * FROM cancelledregistrations", defered.makeNodeResolver());
+        return defered.promise;
+    }
     //Using the database format from the latest get request to avoid unexpected results when posting
     var latestQuery;
     const tableToIndexRep = {
@@ -68,12 +84,14 @@ app.get("/", (req, res) => {
         "registrationinfo": 1,
         "venuelocation": 2
     };
-    Q.all([membersQuery(), memberDescQuery(), registrationsQuery(), venuesQuery(), venueDescQuery()]).then(res1 => {
+    Q.all([membersQuery(), memberDescQuery(), venuesQuery(), venueDescQuery(), registrationsQuery(), registrationsTypeQuery(), canceledQuery()]).then(res1 => {
         const memberDetails = res1[0][0];
-        const venueDetails = res1[3][0];
-        const regisInfo = res1[2][0];
+        const venueDetails = res1[2][0];
+        const regisDetails = res1[4][0];
+        const canceledDetails = res1[6][0];
         const memberNames = createNames(memberDetails);
         const venueNames = createNames(venueDetails);
+        const regisNames = createNames(regisDetails);
         //Member specific stuff
         for (let i = 0; i < memberDetails.length; i++) {
             //This to prevent handlebar rendering errors
@@ -91,23 +109,42 @@ app.get("/", (req, res) => {
             var doB = moment(JSON.stringify(memberDetails[i].DoB).split("T")[0], "YYYY-MM-DD");
             memberDetails[i].DoB = doB.format("DD / MM / YYYY");
         }
+        for (let i = 0; i < regisDetails.length; i++) {
+            let contains = false;
+            for (let ii = 0; ii < canceledDetails.length; ii++) {
+                if (regisDetails[i].id === canceledDetails[ii].id) {
+                    contains = true;
+                    break;
+                }
+            }
+            if (contains) {
+                regisDetails.splice(i, 1);
+                i--;
+                continue;
+            }
+        }
         const memberTypeDetails = fixEnumTypes(res1[1][0], memberNames);
-        const venueTypeDetails = fixEnumTypes(res1[4][0], venueNames);
+        const venueTypeDetails = fixEnumTypes(res1[3][0], venueNames);
+        const registraionTypeDetails = fixEnumTypes(res1[5][0], regisNames);
         latestQuery = res1;
+        const tILp = { "members": 1, "venuelocations": 3, "registrationinfo": 5 };
         res.render("index", {
             MemberDetails: memberDetails,
-            RegistrationDetails: regisInfo,
             MemberDesc: memberNames,
             MemberType: memberTypeDetails,
             VenueDesc: venueNames,
             VenueDetails: venueDetails,
             VenueType: venueTypeDetails,
-            GeneralData: JSON.stringify(res1)
+            RegisDetails: regisDetails,
+            RegisDesc: regisNames,
+            RegisType: registraionTypeDetails,
+            GeneralData: JSON.stringify(res1),
+            typeIndexLookup: JSON.stringify(tILp)
         });
     }).catch(e => {
         console.log(e);
     });
-    //Placed inside the Get call to seperate out different clients..... Don't actually know if this works
+    //Placed inside the Get call to seperate out different clients.
     app.post("/submitNewTable", (reqP, resP) => {
         var allPromises = [];
         for (let i = 0; i < reqP.body.length; i++) {
@@ -150,6 +187,15 @@ app.get("/", (req, res) => {
                 connection.query(myQuery, defered.makeNodeResolver());
                 allPromises.push(defered.promise);
             }
+            else if (reqP.body[i].operation === "CANCEL") {
+                let myQuery = "INSERT INTO cancelledregistrations VALUES (" + reqP.body[i].rowID + ");";
+                const defered = Q.defer();
+                connection.query(myQuery, defered.makeNodeResolver());
+                allPromises.push(defered.promise);
+            }
+            else {
+                console.log("operation messup");
+            }
         }
         Q.all(allPromises).catch(e => {
             resP.end("ERROR:" + e.errno);
@@ -161,6 +207,96 @@ app.get("/", (req, res) => {
         //    if (err2) console.log(err2);
         //    resP.end("Success");
         //}
+    });
+    const deferer = Q.defer();
+    connection.query("SELECT * FROM venuelocations", deferer.makeNodeResolver());
+    app.post("/uploadExcel", upload.single("excelVenue"), (reqP, resP) => {
+        // reqP.file.e
+        const data = new Uint8Array(reqP.file.buffer);
+        const binArr = [];
+        for (let i = 0; i < data.length; i++) {
+            binArr[i] = String.fromCharCode(data[i]);
+        }
+        var byteString = binArr.join("");
+        const newVenueData = xlsx.read(byteString, { type: "binary" });
+        const jsonView = xlsx.utils.sheet_to_json(newVenueData.Sheets[newVenueData.SheetNames[0]]);
+        let nameToId = {};
+        let hugeListOfPromises = [];
+        deferer.promise.then(info => {
+            for (let i = 0; i < info[0].length; i++) {
+                nameToId[info[0][i].VenueName] = info[0][i].ID;
+            }
+            for (let i = 0; i < jsonView.length; i++) {
+                let isAllNull = true;
+                for (let key in jsonView[i]) {
+                    if (jsonView[i].hasOwnProperty(key)) {
+                        //        keyNames.push(key);
+                        if (jsonView[i][key] === "") {
+                            jsonView[i][key] = "NULL";
+                            continue;
+                        }
+                        else {
+                            isAllNull = false;
+                        }
+                        if (key === "ContactPh" || key === "Fax Number") {
+                            jsonView[i][key] = jsonView[i][key].replace(/[\(\) ]/g, "");
+                        }
+                        else if (key === "PostCode") {
+                        }
+                        else if (key === "Capacity") {
+                            jsonView[i][key] = jsonView[i][key].replace(",", "");
+                        }
+                        //Have to use name as index since the excel file doesn't have any index
+                        if (key === "VenueName") {
+                            if (nameToId.hasOwnProperty(jsonView[i][key])) {
+                                jsonView[i]["rowID"] = nameToId[jsonView[i][key]];
+                            }
+                        }
+                        jsonView[i][key] = "'" + jsonView[i][key] + "'";
+                    }
+                }
+                if (isAllNull) {
+                    jsonView.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                Object.defineProperty(jsonView[i], "ContactFax", Object.getOwnPropertyDescriptor(jsonView[i], "Fax Number"));
+                delete jsonView[i]["Fax Number"];
+                const deferedAgain = Q.defer();
+                let queryString = "";
+                if (jsonView[i].hasOwnProperty("rowID")) {
+                    queryString = "UPDATE venuelocations SET ";
+                    for (let key in jsonView[i]) {
+                        if (jsonView[i].hasOwnProperty(key)) {
+                            if (key === "rowID") {
+                                continue;
+                            }
+                            queryString += "`" + key + "` = " + jsonView[i][key] + ",";
+                        }
+                    }
+                    queryString = queryString.replace(/,$/g, "");
+                    queryString += " WHERE ID=" + jsonView[i]["rowID"] + ";";
+                }
+                else {
+                    queryString = "INSERT INTO venuelocations VALUES (NULL";
+                    for (let key in jsonView[i]) {
+                        if (jsonView[i].hasOwnProperty(key)) {
+                            queryString += ", " + jsonView[i][key];
+                        }
+                    }
+                    queryString += ");";
+                }
+                connection.query(queryString, deferedAgain.makeNodeResolver());
+                hugeListOfPromises.push(deferer.promise);
+            }
+        }).catch(function (e) {
+            console.log(e);
+        });
+        Q.all(hugeListOfPromises).then(function () {
+            resP.end("Success");
+        }).catch(function (e) {
+            console.log(e);
+        });
     });
     app.get("/requestPdf", (reqP, resP) => {
         if (reqP.query["file"] === "attendenceRep") {
@@ -226,7 +362,7 @@ function fixEnumTypes(descArray, namesArray) {
                 enumArray[ii] = enumArray[ii].substr(1).slice(0, -1);
             }
         }
-        else if (newType === "year") {
+        else if (newType === "year" || newType === "mediumint") {
             year = true;
         }
         else if (newType === "tinyint") {

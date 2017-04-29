@@ -2,31 +2,39 @@
 //import * as $ from "jquery"
 var newEntriesAdded = 0;
 var databaseDesc = this["databaseDesc"];
+var typeIndexLookup = this["typeIndexLookup"];
 var allCurrentChanges = [];
-var coloumnTitles = $("#members").find("th");
+const tables = ["#members", "#venuelocations", "#registrationinfo"];
 $('[data-toggle="tooltip"]')["tooltip"]();
 //  var removerBtn = $('<button class="btn btn-default btn-sm">x</button>');
 var removerBtn = $("<a/>", {
     html: "&times;",
     class: "removeColBtns",
-    href: "#/",
+    href: "#/"
 }).hide(0).on("click", removeHeaderClicked);
-for (let i = 1; i < coloumnTitles.length - 1; i++) {
-    removerBtn.clone(true, true).appendTo(coloumnTitles.get(i));
-    //Hiding everything apart from the default IF they have javascript, so they can still view all the data without javascript enabled
-    $("#members,#venuelocations,#registrationinfo").find("td:nth-child(" + (i + 1) + "), th:nth-child(" + (i + 1) + ")").hide();
+for (let i = 0; i < tables.length; i++) {
+    let coloumnTitles = $(tables[i]).find("th");
+    for (let ii = 1; ii < coloumnTitles.length - 1; ii++) {
+        removerBtn.clone(true, true).appendTo(coloumnTitles.get(ii));
+        //Hiding everything apart from the default IF they have javascript, so they can still view all the data without javascript enabled
+        $(tables[i]).find("td:nth-child(" + (ii + 1) + "), th:nth-child(" + (ii + 1) + ")").hide();
+    }
 }
+//$("#members,#venuelocations,#registrationinfo").find("th:last-child, td:last-child").show();
 $(".buttonSelector").hide(0);
 $(".editSaveBtn,.editCancelBtn").hide(0);
 toggleCurCol("members", "FName", true);
 toggleCurCol("members", "LName", true);
 toggleCurCol("members", "MobileNum", true);
 toggleCurCol("members", "Email", true);
+toggleCurCol("venuelocations", "VenueName", true);
+toggleCurCol("venuelocations", "ContactPerson", true);
+toggleCurCol("venuelocations", "Capacity", true);
+toggleCurCol("venuelocations", "Address1", true);
+toggleCurCol("registrationinfo", "MemberID", true);
+toggleCurCol("registrationinfo", "ActivityID", true);
 $("#attendenceRepBtn").click(function (e) {
     window.open("requestPdf?file=attendenceRep");
-});
-$("#activityRegis").click(e => {
-    window.open("requestPdf?file=activityRegis");
 });
 $("#activityRegis").click(e => {
     window.open("requestPdf?file=activityRegis");
@@ -49,8 +57,12 @@ $("tbody").on("click", ".editEntryBtn", e => {
             return;
         }
         const originalValue = $(this).find(".displayEntry").text();
-        $(this).children(".editEntry").find(".addEntryInput").attr("placeholder", originalValue);
-        $(this).children(".editEntry").find(".addEntryInput").val(originalValue);
+        const addEntryIn = $(this).children(".editEntry").find(".addEntryInput");
+        if (addEntryIn.is("[type='checkbox']")) {
+            addEntryIn.prop("checked", originalValue.toLowerCase() === "yes" || originalValue.toLowerCase() === "true");
+        }
+        addEntryIn.attr("placeholder", originalValue);
+        addEntryIn.val(originalValue);
         $(this).children(".editEntry").show();
         $(this).children(".displayEntry").hide();
         //var temp = $(this).append($("<input/>",
@@ -64,6 +76,11 @@ $("tbody").on("click", ".editEntryBtn", e => {
     });
     $(e.target).hide();
     $(e.target.parentElement).find(".editSaveBtn,.editCancelBtn").show();
+});
+$(".cancelRegisBtn").click(function (e) {
+    const curId = +$(e.target).parents("tr").children(".dataEntry").first().children(".displayEntry").text();
+    $(e.target).parents("tr").remove();
+    allCurrentChanges.push({ rowID: curId, operation: "CANCEL" });
 });
 var latestTargetInfo = { id: [], table: "none", row: $() };
 $("#removalConfirm").on("show.bs.modal", function (e) {
@@ -106,10 +123,10 @@ $("input.addEntryInput").blur(e => {
 $("input.addEntryInput[type='checkbox']").change(function () {
     $(this).attr("changed", "true");
 });
-$("#addMembers").on("show.bs.modal", e => {
-    const entry = $("#addMembers").find(".addEntryEntry");
+$(".addEntryModal").on("show.bs.modal", function (e) {
+    const entry = $(this).find(".addEntryEntry");
     if ($(e.relatedTarget).hasClass("massEditEdit")) {
-        $("#addMembers").find(".addConfirmBtn").text("Apply").attr("panelMode", "massEdit");
+        $(this).find(".addConfirmBtn").text("Apply").attr("panelMode", "massEdit");
         entry.find("input.addEntryInput").val("<same>");
         entry.find("select.addEntryInput").each(function (i) {
             if ($(this).find("option:contains('<same>')").length === 0) {
@@ -123,7 +140,7 @@ $("#addMembers").on("show.bs.modal", e => {
         entry.find("input.addEntryInput[type='checkbox']").attr("changed", "false");
     }
     else {
-        $("#addMembers").find(".addConfirmBtn").text("Add").attr("panelMode", "add");
+        $(this).find(".addConfirmBtn").text("Add").attr("panelMode", "add");
         entry.find("select.addEntryInput").each(function (i) {
             //Check if the last click was a mass edit, if so, clear the same tags. Otherwise save previous input
             const selectOpt = $(this).find("option:contains('<same>')");
@@ -135,10 +152,11 @@ $("#addMembers").on("show.bs.modal", e => {
         });
     }
 });
-$("#addMembers").find(".addConfirmBtn").click(e => {
+$(".addEntryModal").find(".addConfirmBtn").click(e => {
+    const containingTable = findContainingTable($(e.target));
     let hasAnyErrors = false;
     $(e.target).parents("div.modal-content").find(".addEntryInput").each(function () {
-        const hasError = checkForErrors($(this, $(e.target).attr("panelMode") === "massEdit"));
+        const hasError = checkForErrors($(this), ($(e.target).attr("panelMode") === "massEdit"));
         if (hasError) {
             hasAnyErrors = true;
         }
@@ -151,12 +169,12 @@ $("#addMembers").find(".addConfirmBtn").click(e => {
     }
     if ($(e.target).attr("panelMode") === "massEdit") {
         let editionEntry = [];
-        $("#addMembers").find(".addEntryEntry").each(function (i) {
+        $(e.target).parents(".addEntryModal").find(".addEntryEntry").each(function (i) {
             let entryData = "";
             const dynItem = $(this).find(".addEntryInput");
             const entryName = $(this).find(".addEntryLbl").text();
             if (i === 0) {
-                editionEntry.push({ name: entryName, colInd: i, data: massEditCheckboxIds("members") });
+                editionEntry.push({ name: entryName, colInd: i, data: massEditCheckboxIds(containingTable) });
                 return;
             }
             if (dynItem.length === 0) {
@@ -173,18 +191,20 @@ $("#addMembers").find(".addConfirmBtn").click(e => {
             }
             editionEntry.push({ colInd: i, name: entryName, data: entryData });
         });
-        $("#members").find(".massEditCbox:checked").each(function (i) {
+        $("#" + containingTable).find(".massEditCbox:checked").each(function (i) {
             const row = $(this).parents("tr").children(".dataEntry");
             for (let ii = 0; ii < editionEntry.length; ii++) {
-                row.eq(editionEntry[ii].colInd).children(".displayEntry").text(editionEntry[ii].data);
+                if (editionEntry[ii].colInd !== 0) {
+                    row.eq(editionEntry[ii].colInd).children(".displayEntry").text(editionEntry[ii].data);
+                }
             }
         });
-        allCurrentChanges.push({ table: "members", rowID: editionEntry[0].data, operation: "UPDATE", data: editionEntry });
+        allCurrentChanges.push({ table: containingTable, rowID: editionEntry[0].data, operation: "UPDATE", data: editionEntry });
         return;
     }
     $(e.target).removeClass("btn-danger").addClass("btn-primary").text("Add");
     let additionEntry = [];
-    $("#addMembers").find(".addEntryEntry").each(function (i) {
+    $(e.target).parents(".addEntryModal").find(".addEntryEntry").each(function (i) {
         let entryData = "";
         const dynItem = $(this).find(".addEntryInput");
         const entryName = $(this).find(".addEntryLbl").text();
@@ -204,9 +224,9 @@ $("#addMembers").find(".addConfirmBtn").click(e => {
         }
         additionEntry.push({ name: entryName, data: entryData });
     });
-    allCurrentChanges.push({ table: "members", rowID: [((-1) - newEntriesAdded)], operation: "INSERT", data: additionEntry });
+    allCurrentChanges.push({ table: containingTable, rowID: [((-1) - newEntriesAdded)], operation: "INSERT", data: additionEntry });
     newEntriesAdded++;
-    addRow("members", additionEntry);
+    addRow(containingTable, additionEntry);
 });
 function massEditCheckboxIds(table, loopFunctions = null) {
     const idsToRemove = [];
@@ -254,9 +274,10 @@ $("#submitConfirm").on("hidden.bs.modal", () => {
     }
 });
 $("tbody").on("click", ".editSaveBtn", (e => {
-    var currentRowData = [];
-    let hasAnyErrors = false;
     const dataEntryLst = $(e.target.parentElement.parentElement.parentElement).find(".dataEntry");
+    //Add id as first item to comply with mass edit format
+    var currentRowData = [{ colInd: 0, data: dataEntryLst.first().text().trim() }];
+    let hasAnyErrors = false;
     dataEntryLst.each(function (i) {
         if (i === 0) {
             return;
@@ -299,7 +320,7 @@ $("tbody").on("click", ".editSaveBtn", (e => {
     $('[data-toggle="tooltip"]')["tooltip"]();
     $(e.target.parentElement.parentElement.parentElement).find(".editSaveBtn,.editCancelBtn").hide(0);
     $(e.target.parentElement.parentElement.parentElement).find(".editEntryBtn").show();
-    allCurrentChanges.push({ rowID: [+dataEntryLst.first().text().trim()], data: currentRowData, table: findContainingTable($(e.target)), operation: "UPDATE" });
+    allCurrentChanges.push({ rowID: [+currentRowData[0].data], data: currentRowData, table: findContainingTable($(e.target)), operation: "UPDATE" });
 }));
 $("tbody").on("click", ".editCancelBtn", (e => {
     $(e.target.parentElement.parentElement.parentElement).find(".dataEntry").each(function () {
@@ -314,6 +335,11 @@ $(".buttonSelSelction").click(e => {
     // var colHeaderObj = $("th:contains(\"" + e.target.textContent + "×\")");
     toggleCurCol(findContainingTable($(e.target)), e.target.textContent);
 });
+$(".selectAllCb").change(function (e) {
+    const containingTable = findContainingTable($(e.target));
+    const checked = $(e.target).is(":checked");
+    $("#" + containingTable).find(".massEditCbox").prop("checked", checked);
+});
 function getAllIndices(arr, val) {
     var indexes = [], i;
     for (i = 0; i < arr.length; i++)
@@ -325,13 +351,13 @@ function checkForErrors(inputToCheck, sameMode = false) {
     if (inputToCheck.attr("type") === "checkbox") {
         return false;
     }
-    if (inputToCheck.val().toLowerCase() === "<same>") {
+    if (inputToCheck.val().toLowerCase() === "<same>" && sameMode) {
         inputToCheck.parent().removeClass("has-error");
         return false;
     }
     const inputTxt = inputToCheck.val().trim();
     const colId = +inputToCheck.attr("colID");
-    const requirements = databaseDesc[1][0][colId];
+    const requirements = databaseDesc[typeIndexLookup[findContainingTable(inputToCheck)]][0][colId];
     let maxLength = (requirements.Type.match(/\(\d+\)/));
     maxLength = maxLength ? +(maxLength[0].substr(1).slice(0, -1)) : NaN;
     const varType = requirements.Type.match(/[a-zA-Z]+/)[0];
@@ -382,11 +408,14 @@ function findContainingTable(candidate) {
     if ($.contains($("#members")[0], candidate[0])) {
         containedTable = "members";
     }
-    else if ($.contains($("#registrationInfo")[0], candidate[0])) {
+    else if ($.contains($("#registrationinfo")[0], candidate[0])) {
         containedTable = "registrationinfo";
     }
     else if ($.contains($("#venuelocations")[0], candidate[0])) {
         containedTable = "venuelocations";
+    }
+    if (containedTable === "Failed") {
+        throw "CANT FIND CONTAINER";
     }
     return containedTable;
 }
@@ -437,13 +466,15 @@ function otherEntryRemovalCheck(allIDs, relevantTable) {
 }
 var dropZone = document.getElementById('drop-zone');
 var uploadForm = document.getElementById('js-upload-form');
-var startUpload = function (file) {
+var startUpload = file => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("excelVenue", file);
     $.ajax("/uploadExcel", {
         type: 'POST',
         // Ajax events
         success: function (data) {
+            $("#uploadxlsx")["modal"]("hide");
+            location.reload();
         },
         error: function () {
             alert("Something went wrong!");
@@ -456,7 +487,7 @@ var startUpload = function (file) {
         processData: false
     });
 };
-$("#drop-zone").on("drop", function (e) {
+$("#drop-zone").on("drop", e => {
     e.preventDefault();
     e.stopPropagation();
     if (e.originalEvent["dataTransfer"] && e.originalEvent["dataTransfer"].files.length) {
@@ -470,16 +501,16 @@ $("#drop-zone").on("drop", function (e) {
         }
     }
 });
-$('#drop-zone').on("dragover", function (e) {
+$('#drop-zone').on("dragover", e => {
     e.preventDefault();
     e.stopPropagation();
     $(e.target).addClass("drop");
 });
-$('#drop-zone').on("dragenter", function (e) {
+$('#drop-zone').on("dragenter", e => {
     e.preventDefault();
     e.stopPropagation();
 });
-$("#drop-zone").on("dragleave", function (e) {
+$("#drop-zone").on("dragleave", e => {
     $(e.target).removeClass("drop");
 });
 $('#js-upload-files').change(function () {

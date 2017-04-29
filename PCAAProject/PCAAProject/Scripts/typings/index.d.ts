@@ -4,5 +4,7 @@
 /// <reference path="modules/body-parser/index.d.ts" />
 /// <reference path="modules/consolidate/index.d.ts" />
 /// <reference path="modules/express/index.d.ts" />
+/// <reference path="modules/multer/index.d.ts" />
 /// <reference path="modules/mysql/index.d.ts" />
 /// <reference path="modules/q/index.d.ts" />
+/// <reference path="modules/xlsx/index.d.ts" />
