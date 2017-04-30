@@ -48,7 +48,6 @@ handlebars.registerHelper("math", (lvalue, operator, rvalue, options) => {
 
 app.set("view engine", "hbs");
 
-handlebars.registerPartial("membersItem", fs.readFileSync(__dirname + "/Views/Partials/MembersItem.hbs", "utf8"));
 app.get("/", (req: express.Request, res: express.Response) => {
 
     function membersQuery() {
@@ -107,12 +106,16 @@ app.get("/", (req: express.Request, res: express.Response) => {
         const venueNames = createNames(venueDetails);
         const regisNames = createNames(regisDetails);
 
+        const memberTypeDetails = fixEnumTypes(res1[1][0], memberNames);
+        const venueTypeDetails = fixEnumTypes(res1[3][0], venueNames);
+        const registraionTypeDetails = fixEnumTypes(res1[5][0], regisNames);
+
         //Member specific stuff
         for (let i = 0; i < memberDetails.length; i++) {
             //This to prevent handlebar rendering errors
             for (let key in memberDetails[i]) {
                 if (memberDetails[i].hasOwnProperty(key)) {
-                    if (!memberDetails[i][key]) {
+                    if (!(memberDetails[i][key] || memberDetails[i][key] === 0)) {
                         memberDetails[i][key] = "";
                     }
                 }
@@ -122,7 +125,12 @@ app.get("/", (req: express.Request, res: express.Response) => {
             else
                 memberDetails[i].PostAddressSame = "No";
 
-            var doB = moment(JSON.stringify(memberDetails[i].DoB).split("T")[0], "YYYY-MM-DD");
+            if (memberDetails[i].AllowInternetName == "1")
+                memberDetails[i].AllowInternetName = "Yes";
+            else
+                memberDetails[i].AllowInternetName = "No";
+
+            const doB = moment(JSON.stringify(memberDetails[i].DoB).split("T")[0], "YYYY-MM-DD");
 
             memberDetails[i].DoB = doB.format("DD / MM / YYYY");
         }
@@ -142,9 +150,7 @@ app.get("/", (req: express.Request, res: express.Response) => {
             }
         }
 
-        const memberTypeDetails = fixEnumTypes(res1[1][0], memberNames);
-        const venueTypeDetails = fixEnumTypes(res1[3][0], venueNames);
-        const registraionTypeDetails = fixEnumTypes(res1[5][0], regisNames);
+
 
         latestQuery = res1;
 
@@ -169,6 +175,16 @@ app.get("/", (req: express.Request, res: express.Response) => {
         console.log(e);
     });
 
+    app.get("/onlineMemberList",
+        function (reqP: express.Request, resP: express.Response) {
+            membersQuery().then(res => {
+                resP.render("onlineMemberList",
+                    {
+                        Members: res[0]
+
+                    });
+            });
+        });
     //Placed inside the Get call to seperate out different clients.
     app.post("/submitNewTable",
         (reqP: bodyParser.ParsedAsJson & express.Request, resP: express.Response) => {
@@ -181,11 +197,20 @@ app.get("/", (req: express.Request, res: express.Response) => {
 
                     const typeArray = latestQuery[tableToIndexRep[insertIntoTable]][1];
                     for (let ii = 1; ii < reqP.body[i].data.length; ii++) {
-                        myQuery += "`" +
-                            typeArray[reqP.body[i].data[ii].colInd].name +
-                            "` = '" +
-                            reqP.body[i].data[ii].data +
-                            "',";
+                        if (typeArray[reqP.body[i].data[ii].colInd].type === 1) {
+                            myQuery += "`" +
+                                typeArray[reqP.body[i].data[ii].colInd].name +
+                                "` = " +
+                                reqP.body[i].data[ii].data +
+                                ",";
+                        } else {
+                            myQuery += "`" +
+                                typeArray[reqP.body[i].data[ii].colInd].name +
+                                "` = '" +
+                                reqP.body[i].data[ii].data +
+                                "',";
+                        }
+
                     }
                     myQuery.trim();
                     myQuery = myQuery.replace(/,$/, "");
@@ -206,9 +231,20 @@ app.get("/", (req: express.Request, res: express.Response) => {
                     for (let ii = 1; ii < reqP.body[i].data.length; ii++) {
                         let addition;
                         if (reqP.body[i].data[ii].data) {
-                            addition = ",'" + reqP.body[i].data[ii].data + "'";
+                            if (reqP.body[i].data[ii].data.match(/^(0?[1-9]|[12][0-9]|3[01])\ *[\/\-]\ *(0?[1-9]|1[012])\ *[\/\-]\ *\d{4}$/)) {
+                                reqP.body[i].data[ii].data = reqP.body[i].data[ii].data.replace(/\//g, "-");
+                                addition = ",STR_TO_DATE('" + reqP.body[i].data[ii].data + "', '%d-%c-%Y')";
+                            } else if (reqP.body[i].data[ii].data === "No") {
+                                addition = ",0";
+                            } else if (reqP.body[i].data[ii].data === "Yes") {
+                                addition = ",1";
+                            } else {
+                                addition = ",'" + reqP.body[i].data[ii].data + "'";
+                            }
+
+
                         }
-                        myQuery += (addition || "NULL");
+                        myQuery += (addition || ",NULL");
                     }
                     myQuery += ");";
 

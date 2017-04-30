@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Views\images\BadgeFramePrintQuality.png" />
+    <Content Include="Views\onlineMemberList.hbs" />
     <Content Include="Views\NameBadge.hbs" />
     <Content Include="Views\ActivityRegister.hbs" />
     <Content Include="Views\VenueCapacityOutput.hbs" />

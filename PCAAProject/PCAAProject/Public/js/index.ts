@@ -27,7 +27,6 @@ for (let i = 0; i < tables.length; i++) {
 //$("#members,#venuelocations,#registrationinfo").find("th:last-child, td:last-child").show();
 $(".buttonSelector").hide(0);
 $(".editSaveBtn,.editCancelBtn").hide(0);
-
 toggleCurCol("members", "FName", true);
 toggleCurCol("members", "LName", true);
 toggleCurCol("members", "MobileNum", true);
@@ -49,6 +48,10 @@ $("#activityRegis").click(e => {
 
 $("#nameBadges").click(e => {
     window.open("requestPdf?file=nameBadge");
+});
+
+$("#viewList").click(e => {
+    window.open("onlineMemberList");
 });
 
 $(".colEditBtn").click(() => {
@@ -433,12 +436,12 @@ function toggleCurCol(table: String, rowToRemove: String, forceVisibility = fals
     });
     $("#" + table).find("td:nth-child(" + (indexObj.index() + 1) + "), th:nth-child(" + (indexObj.index() + 1) + ")").toggle();
     if (indexObj.is(":visible") || forceVisibility) {
-        $("a.buttonSelSelction").filter(function () {
+        $("#" + table + " a.buttonSelSelction").filter(function () {
             return $(this).text().toLowerCase() === rowToRemove.toLowerCase();
         }).prepend($('<span class="glyphicon glyphicon-ok pull-right"></span>'));
     }
     else {
-        $("a.buttonSelSelction").filter(function () {
+        $("#" + table + " a.buttonSelSelction").filter(function () {
             return $(this).text().toLowerCase() === rowToRemove.toLowerCase();
         }).children("span").remove();
     }
@@ -477,7 +480,7 @@ function addRow(containingTable, newData) {
     for (let i = 0; i < memberTitleLst.length; i++) {
         const newItem = $('<td class="vert-align dataEntry">' + newData[i].data + '</td>');
 
-        const isHidden = $("div.buttonSelector .dropdown-menu").find("*").filter(function () {
+        const isHidden = $("#" + containingTable + " div.buttonSelector .dropdown-menu").find("*").filter(function () {
             return $(this).text().toLowerCase() === newData[i].name.toLowerCase();
         }).find("span").length === 0;
         if (isHidden) {

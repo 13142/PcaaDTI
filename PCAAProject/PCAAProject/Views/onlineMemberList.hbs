@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Online member list</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1><b>PCAA Manager</b></h1>
+            <p>Management for thing</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <h2>List of people attending the jubilee activies</h2>
+            <h4>Not everyone is shown here, some people prefered their name to not be on this public list</h4>
+
+            <ul>
+                {{#each Members}}
+                <li>{{FName}} {{LName}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -42,6 +42,9 @@ $("#activityRegis").click(e => {
 $("#nameBadges").click(e => {
     window.open("requestPdf?file=nameBadge");
 });
+$("#viewList").click(e => {
+    window.open("onlineMemberList");
+});
 $(".colEditBtn").click(() => {
     $(".removeColBtns").toggle(25);
     $(".buttonSelector").toggle(25);
@@ -386,12 +389,12 @@ function toggleCurCol(table, rowToRemove, forceVisibility = false) {
     });
     $("#" + table).find("td:nth-child(" + (indexObj.index() + 1) + "), th:nth-child(" + (indexObj.index() + 1) + ")").toggle();
     if (indexObj.is(":visible") || forceVisibility) {
-        $("a.buttonSelSelction").filter(function () {
+        $("#" + table + " a.buttonSelSelction").filter(function () {
             return $(this).text().toLowerCase() === rowToRemove.toLowerCase();
         }).prepend($('<span class="glyphicon glyphicon-ok pull-right"></span>'));
     }
     else {
-        $("a.buttonSelSelction").filter(function () {
+        $("#" + table + " a.buttonSelSelction").filter(function () {
             return $(this).text().toLowerCase() === rowToRemove.toLowerCase();
         }).children("span").remove();
     }
@@ -426,7 +429,7 @@ function addRow(containingTable, newData) {
         .append('<td class="col-md-1 vert-align">\r\n<div class="anim-checkbox" draggable="false">\r\n<label>\r\n<input type="checkbox" value="">\r\n<span class="cr">\r\n<i class="cr-icon glyphicon glyphicon-ok"></i>\r\n</span>\r\n</label>\r\n</div>\r\n</td>');
     for (let i = 0; i < memberTitleLst.length; i++) {
         const newItem = $('<td class="vert-align dataEntry">' + newData[i].data + '</td>');
-        const isHidden = $("div.buttonSelector .dropdown-menu").find("*").filter(function () {
+        const isHidden = $("#" + containingTable + " div.buttonSelector .dropdown-menu").find("*").filter(function () {
             return $(this).text().toLowerCase() === newData[i].name.toLowerCase();
         }).find("span").length === 0;
         if (isHidden) {
