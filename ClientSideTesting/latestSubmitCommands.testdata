@@ -1,0 +1,5 @@
+
+[{"table":"registrationinfo","rowID":[-1],"operation":"INSERT","data":[{"name":"ID","data":-1},{"name":"MemberID","data":"183"},{"name":"ActivityID","data":"3"}]}]
+[{"rowID":[1],"data":[{"colInd":0,"data":"1"},{"data":"183","colInd":1},{"data":"5","colInd":2}],"table":"registrationinfo","operation":"UPDATE"}]
+[{"table":"registrationinfo","rowID":[-2],"operation":"INSERT","data":[{"colInd":0,"data":"-2"},{"data":"189","colInd":1},{"data":"2","colInd":2}]}]
+[{"table":"registrationinfo","rowID":[-1],"operation":"INSERT","data":[{"name":"ID","data":-1},{"name":"MemberID","data":"183"},{"name":"ActivityID","data":"3"}]},{"rowID":[1],"data":[{"colInd":0,"data":"1"},{"data":"183","colInd":1},{"data":"5","colInd":2}],"table":"registrationinfo","operation":"UPDATE"},{"table":"registrationinfo","rowID":[-2],"operation":"INSERT","data":[{"colInd":0,"data":"-2"},{"data":"189","colInd":1},{"data":"2","colInd":2}]}]

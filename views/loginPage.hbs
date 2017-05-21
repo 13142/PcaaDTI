@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Online member list</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1><b>PCAA Manager</b></h1>
+            <p>Management for thing</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Login</strong></div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" action="/login" method="post">
+                            <h4 id="errorMsg" style="text-align:center; color:red; display:none;">Error! Incorrect Password</h4>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="username">Username:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" maxlength="45" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="pwd">Password:</label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" name="pwd" id="pwd" placeholder="Enter password" maxlength="128" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox"><del> Remember me</del> Out of order</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        var errorType;
+        {{#if errorType}}
+        errorType = "{{errorType}}";
+        {{/if}}
+
+            if (errorType) {
+                if (errorType === "passwordErr") {
+                    $("#errorMsg").text("Error! Incorrect Password").show();
+                }
+                else if (errorType === "usernameErr") {
+                    $("#errorMsg").text("Error! Incorrect Username").show();
+                }else {
+                    $("#errorMsg").text("Unknown Error!").show();
+                }
+
+            }
+    </script>
+</body>
+
+</html>

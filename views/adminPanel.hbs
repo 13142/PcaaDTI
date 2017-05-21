@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Online member list</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/accountManagement.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1><b>PCAA Manager</b></h1>
+            <p>Management for thing</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-3">
+                <ul class="list-group">
+                    <li class="list-group-item"><h3>Admin Panel</h3></li>
+                    {{#each accountLst}}
+                    <li class="list-group-item isPanelButton {{#if @first}}active{{/if}}" data-toggle="tab" data-target="#{{username}}Panel"><b>{{username}}</b></li>
+                    {{/each}}
+                    <li class="list-group-item btnRightCont"><a href="/main">Back</a><button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#addUsr">Add new accounts</button></li>
+                </ul>
+                <div class="alert alert-success collapse" style="margin-top: 10px;" id="accountSuc">New user successfully added. (Reload page to see changes)</div>
+                <div class="alert alert-danger collapse" style="margin-top: 10px;" id="accountErr">You cannot have duplicate usernames or emails.</div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content">
+                    {{#each accountLst}}
+                    <div id="{{username}}Panel" class="panel tab-pane fade in panel-default {{#if @first}}active{{/if}}">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Account Management</h3>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item btnRightCont">
+                                <span>Current Username: <b>{{username}}</b></span>
+                                <button class="btn btn-default endButton" id="changeUsrBtn" data-toggle="collapse" data-target="#usernameColl-{{@index}}">Change username</button>
+                                <div id="usernameColl-{{@index}}" class="form-horizontal collapse nextLine">
+                                    <hr class="collapseRule" />
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-4" for="newUsr">Enter new username:</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control newUsr" placeholder="Enter new username" maxlength="45" required>
+                                        </div>
+                                    </div>
+                                    <div class="btnRightCont"><div></div><button class="btn btn-primary btnRight usrChange" rowInd="{{id}}">Change</button></div>
+                                    <div class="alert alert-danger collapse usrErr" style="margin-top: 10px;">Field can not be empty</div>
+                                    <div class="alert alert-success collapse usrSuc" style="margin-top: 10px;">Username changed (reload to see changes)</div>
+                                </div>
+                            </li>
+                            <li class="list-group-item btnRightCont">
+                                <span>Password: <b>***********</b></span><button class="btn btn-default endButton" data-toggle="collapse" data-target="#passwordColl-{{@index}}">Change password</button>
+                                <div id="passwordColl-{{@index}}" class="form-horizontal collapse nextLine">
+                                    <hr class="collapseRule" />
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-4" for="newPass">Enter your new password:</label>
+                                        <div class="col-sm-8">
+                                            <input type="password" class="form-control newPass" placeholder="Enter new password" maxlength="100" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-4" for="newPassConf">Confirm your new password:</label>
+                                        <div class="col-sm-8">
+                                            <input type="password" class="form-control newPassConf" placeholder="Confirm password" maxlength="100" required>
+                                        </div>
+                                    </div>
+                                    <div class="btnRightCont"><div></div><button class="btn btn-primary btnRight passChange" rowInd="{{id}}">Change</button></div>
+                                    <div class="alert alert-danger collapse passErr" style="margin-top: 10px;"></div>
+                                    <div class="alert alert-success collapse passSuc" style="margin-top: 10px;">Password changed</div>
+                                </div>
+                            </li>
+                            <li class="list-group-item btnRightCont">
+                                <span>Permission level: <b>{{permissions}}</b></span><button class="btn btn-default endButton" data-toggle="collapse" data-target="#permissionColl-{{@index}}">Change permission</button>
+                                <div id="permissionColl-{{@index}}" class="form-horizontal collapse nextLine">
+                                    <hr class="collapseRule" />
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-4" for="oldPass">New permission:</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control newPerm" placeholder="{{permissions}}">
+                                                <option>Administrator</option>
+                                                <option>User</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="btnRightCont"><div></div><button class="btn btn-primary btnRight permChange" rowInd="{{id}}">Change</button></div>
+                                    <div class="alert alert-danger collapse permErr" style="margin-top: 10px;">Permission is the same</div>
+                                    <div class="alert alert-success collapse permSuc" style="margin-top: 10px;">Permission changed. (Reload to see changes)</div>
+                                </div>
+                            </li>
+                            <li class="list-group-item btnRightCont">
+                                <span>Remove this user: <b class="usernameDisplay">{{username}}</b></span><button class="btn btn-danger endButton" data-toggle="modal" data-target="#removeUsrModal" rowInd="{{id}}">Remove</button>
+                                <div class="alert alert-danger collapse permErr" style="margin-top: 10px;"></div>
+                            </li>
+                            <!--<li class="list-group-item">Current Email: {{email}}<button class="btn btn-default pull-right" style="margin-top: -7px" id="changeEmailBtn">Change email</button></li>-->
+                        </ul>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade removeUsrModal" id="removeUsrModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Remove user</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove <b><span id="removeTargetName"></span></b>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger addConfirmBtn" data-dismiss="modal" id="removeUsrConf">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade addEntryModal" id="addUsr" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Add new user</h4>
+                </div>
+                <div class="modal-body">
+                    Add new user:
+                    <div class="form-group">
+                        <div class="addEntryEntry">
+                            <span class="addEntryLbl" style="margin-right: 20px"><b>ID</b></span>
+                            <span class=""> Auto generated</span>
+                        </div>
+                        {{#each UsrType}}
+                        <div class="addEntryEntry">
+                            <label class="addEntryLbl" for="{{title}}">{{title}}</label>
+                            {{#if enumArray}}
+                            <select class="form-control addEntryInput" colID="{{math @index "+" 1}}">
+                                {{#each enumArray}}
+                                <option>{{this}}</option>
+                                {{/each}}
+                            </select>
+                            {{else if year}}
+                            <input type="number" class="form-control addEntryInput" value="2000" maxlength="{{maxSize}}" colID="{{math @index "+" 1}}">
+                            <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                            {{else if isBool}}
+                            <div class="anim-checkbox" style="flex: 0 0 auto;" draggable="false">
+                                <label style="margin-top: 5px;">
+                                    <input type="checkbox" class="addEntryInput" value="">
+                                    <span class="cr">
+                                        <i class="cr-icon glyphicon glyphicon-ok"></i>
+                                    </span>
+                                </label>
+                            </div>
+                            {{else if isPassword}}
+                            <input type="password" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" colID="{{math @index "+" 1}}" />
+                            {{else}}
+                            <input type="text" class="form-control addEntryInput" name="{{title}}" id="{{title}}" value="" placeholder="{{placeholder}}" colID="{{math @index "+" 1}}" />
+                            <span class="description">Max Length: <b class="maxL">{{maxSize}}</b> Type: <b class="varType">{{type}}</b> </span>
+                            {{/if}}
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                    <button type="button" class="btn btn-primary addConfirmBtn" data-dismiss="modal" id="addUsrConf">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        var errorType;
+        {{#if errorType}}
+        errorType = "{{errorType}}";
+        {{/if}}
+
+            if (errorType) {
+                if (errorType === "passwordErr") {
+                    $("#errorMsg").text("Error! Incorrect Password").show();
+                }
+                else if (errorType === "usernameErr") {
+                    $("#errorMsg").text("Error! Incorrect Username").show();
+                }else {
+                    $("#errorMsg").text("Unknown Error!").show();
+                }
+
+            }
+    </script>
+    <script src="js/adminPanel.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "pcaathing",
+  "version": "0.0.0",
+  "private": true,
+  "main": "app.js",
+  "author": {
+    "name": "Hand of Cthulhu"
+  },
+  "devDependencies": {
+    "body-parser": "^1.17.1",
+    "consolidate": "^0.14.5",
+    "express": "^4.15.2",
+    "express-serve-static-core": "^0.1.1",
+    "express-session": "^1.15.2",
+    "handlebars": "^4.0.6",
+    "html-pdf": "^2.1.0",
+    "jquery": "^3.2.1",
+    "mocha": "^3.4.1",
+    "moment": "^2.18.1",
+    "multer": "^1.3.0",
+    "mysql": "^2.13.0",
+    "q": "^1.5.0",
+    "sodium": "^2.0.1",
+    "ts-node": "^3.0.4",
+    "typescript": "^2.3.2",
+    "typescript-require": "^0.2.9-1",
+    "xlsx": "^0.9.12"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
