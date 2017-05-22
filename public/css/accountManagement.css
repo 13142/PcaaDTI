@@ -1,4 +1,19 @@
-﻿.collapseRule {
+@font-face {
+  font-family: orkney;
+  font-weight: normal;
+  src: url("../fonts/Orkney Regular.woff2"); }
+@font-face {
+  font-family: orkney;
+  font-weight: bold;
+  src: url("../fonts/Orkney Bold.woff2"); }
+@font-face {
+  font-family: Inconsolata;
+  font-weight: 200;
+  src: url("../fonts/Inconsolata.otf"); }
+body {
+  font-family: orkney, sans-serif; }
+
+.collapseRule {
   margin-top: 11px; }
 
 .relative {
@@ -39,3 +54,4 @@ span.description {
 input.addEntryInput {
   flex: 1 1 auto; }
 
+/*# sourceMappingURL=accountManagement.css.map */
